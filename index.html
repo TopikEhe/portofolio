@@ -109,6 +109,51 @@
     border: 1px solid rgba(200,169,110,0.25);
     border-radius: 3px;
     padding: 3px 7px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    position: relative;
+  }
+  .tool-tag:hover {
+    background: rgba(200,169,110,0.25);
+    border-color: var(--accent);
+    color: var(--white);
+  }
+
+  /* Tool Tooltip */
+  .tool-tooltip {
+    display: none;
+    position: fixed;
+    background: #1a2b42;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    padding: 10px 13px;
+    max-width: 220px;
+    z-index: 9999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    pointer-events: none;
+  }
+  .tool-tooltip.show { display: block; }
+  .tool-tooltip-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+  .tool-tooltip-desc {
+    font-size: 10.5px;
+    color: rgba(248,246,241,0.85);
+    line-height: 1.6;
+  }
+
+  /* Contact links */
+  .contact-item a {
+    color: rgba(248,246,241,0.85);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .contact-item a:hover {
+    color: var(--accent);
+    text-decoration: underline;
   }
 
   /* ── MAIN ── */
@@ -289,7 +334,7 @@
       </div>
       <div class="mobile-hero-text">
         <div class="name">Taufik Hidayat</div>
-        <div class="title-role">Mahasiswa Teknik Elektronika Industri</div>
+        <div class="title-role">Siswa Teknik Elektronika Industri</div>
         <div class="subtitle-loc">SMKN 1 Way Panji · Lampung, Indonesia</div>
       </div>
     </div>
@@ -302,10 +347,10 @@
 
       <div class="sidebar-section">
         <div class="sidebar-title">Kontak</div>
-        <div class="contact-item"><span class="icon">✉</span> taufikhidayatt365@gmail.com</div>
-        <div class="contact-item"><span class="icon">☎</span> +62 851-8521-4868</div>
-        <div class="contact-item"><span class="icon">in</span> linkedin.com/in/taufik-hidayat</div>
-        <div class="contact-item"><span class="icon">⌥</span> github.com/TopikEhe</div>
+        <div class="contact-item"><span class="icon">✉</span> <a href="mailto:taufikhidayatt365@gmail.com">taufikhidayatt365@gmail.com</a></div>
+        <div class="contact-item"><span class="icon">☎</span> <a href="tel:+628518521-4868">+62 851-8521-4868</a></div>
+        <div class="contact-item"><span class="icon">in</span> <a href="https://linkedin.com/in/taufik-hidayat" target="_blank" rel="noopener">linkedin.com/in/taufik-hidayat</a></div>
+        <div class="contact-item"><span class="icon">⌥</span> <a href="https://github.com/TopikEhe" target="_blank" rel="noopener">github.com/TopikEhe</a></div>
       </div>
 
       <div class="sidebar-section">
@@ -341,12 +386,12 @@
       <div class="sidebar-section">
         <div class="sidebar-title">Alat &amp; Platform</div>
         <div class="tools-list">
-          <span class="tool-tag">Arduino IDE</span>
-          <span class="tool-tag">VS Code</span>
-          <span class="tool-tag">Tinkercad</span>
-          <span class="tool-tag">Fritzing</span>
-          <span class="tool-tag">GitHub</span>
-          <span class="tool-tag">Google Workspace</span>
+          <span class="tool-tag" data-tool="Arduino IDE" data-desc="IDE resmi untuk menulis, mengompilasi, dan mengunggah kode ke board Arduino. Digunakan untuk pengembangan sistem tertanam berbasis C++.">Arduino IDE</span>
+          <span class="tool-tag" data-tool="VS Code" data-desc="Editor kode sumber yang ringan dan powerful dari Microsoft. Digunakan untuk pengembangan Node.js, skrip, dan dokumentasi teknis.">VS Code</span>
+          <span class="tool-tag" data-tool="Tinkercad" data-desc="Platform simulasi sirkuit elektronik berbasis web. Digunakan untuk merancang dan menguji rangkaian Arduino sebelum implementasi fisik.">Tinkercad</span>
+          <span class="tool-tag" data-tool="Fritzing" data-desc="Alat desain elektronik open-source untuk membuat diagram skematik, breadboard, dan layout PCB secara visual.">Fritzing</span>
+          <span class="tool-tag" data-tool="GitHub" data-desc="Platform version control berbasis Git untuk menyimpan, mengelola, dan berkolaborasi pada kode proyek secara online.">GitHub</span>
+          <span class="tool-tag" data-tool="Google Workspace" data-desc="Suite produktivitas dari Google (Docs, Sheets, Drive, dll.) yang digunakan untuk dokumentasi teknis dan kolaborasi tim.">Google Workspace</span>
         </div>
       </div>
     </div>
@@ -357,7 +402,7 @@
     <!-- Desktop header (hidden on mobile) -->
     <div class="header">
       <div class="name">Taufik Hidayat</div>
-      <div class="title-role">Mahasiswa Teknik Elektronika Industri</div>
+      <div class="title-role">Siswa Teknik Elektronika Industri</div>
       <div class="subtitle-loc">SMKN 1 Way Panji · Lampung, Indonesia</div>
     </div>
 
@@ -407,5 +452,57 @@
     </div>
   </main>
 </div>
+<!-- Tool Tooltip -->
+<div class="tool-tooltip" id="toolTooltip">
+  <div class="tool-tooltip-name" id="tooltipName"></div>
+  <div class="tool-tooltip-desc" id="tooltipDesc"></div>
+</div>
+
+<script>
+  const tooltip = document.getElementById('toolTooltip');
+  const tooltipName = document.getElementById('tooltipName');
+  const tooltipDesc = document.getElementById('tooltipDesc');
+
+  document.querySelectorAll('.tool-tag').forEach(tag => {
+    tag.addEventListener('mouseenter', function(e) {
+      tooltipName.textContent = this.dataset.tool;
+      tooltipDesc.textContent = this.dataset.desc;
+      tooltip.classList.add('show');
+      positionTooltip(e);
+    });
+    tag.addEventListener('mousemove', positionTooltip);
+    tag.addEventListener('mouseleave', function() {
+      tooltip.classList.remove('show');
+    });
+    // Mobile tap support
+    tag.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isShown = tooltip.classList.contains('show') && tooltipName.textContent === this.dataset.tool;
+      tooltip.classList.remove('show');
+      if (!isShown) {
+        tooltipName.textContent = this.dataset.tool;
+        tooltipDesc.textContent = this.dataset.desc;
+        tooltip.classList.add('show');
+        positionTooltip(e);
+      }
+    });
+  });
+
+  document.addEventListener('click', function() {
+    tooltip.classList.remove('show');
+  });
+
+  function positionTooltip(e) {
+    const margin = 12;
+    const tw = tooltip.offsetWidth || 220;
+    const th = tooltip.offsetHeight || 80;
+    let x = e.clientX + margin;
+    let y = e.clientY + margin;
+    if (x + tw > window.innerWidth - 8) x = e.clientX - tw - margin;
+    if (y + th > window.innerHeight - 8) y = e.clientY - th - margin;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+  }
+</script>
 </body>
 </html>
